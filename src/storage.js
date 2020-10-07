@@ -8,11 +8,18 @@ module.exports = {
   defaultClientStore,
   defaultProviderStore,
   defaultSessionStore,
+  defaultHostsStore,
   defaultStore
 }
 
 function defaultStore () {
   return global.localStorage
+}
+
+function defaultHostsStore (store) {
+  return new LocalJsonStore('oidc.hosts', {
+    store: store || defaultStore()
+  })
 }
 
 function defaultClientStore (store) {

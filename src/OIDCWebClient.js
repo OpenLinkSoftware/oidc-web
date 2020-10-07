@@ -1,8 +1,10 @@
 'use strict'
 
+const fetch = require('node-fetch')
 const RelyingParty = require('@solid/oidc-rp')
 const Session = require('@solid/oidc-rp/lib/Session')
 const storage = require('./storage')
+const authorization = require('auth-header')
 
 // URI parameter types
 const { QUERY } = require('./browser')
@@ -41,6 +43,7 @@ class OIDCWebClient {
     this.clients = options.clients || storage.defaultClientStore(this.store)
     this.session = options.session || storage.defaultSessionStore(this.store)
     this.providers = options.providers || storage.defaultProviderStore(this.store)
+    this.hosts = storage.defaultHostsStore(this.store)
   }
 
   /**
@@ -96,7 +99,7 @@ class OIDCWebClient {
     if (rp) {
       rp.store = this.store
       try {
-        await rp.logout()
+        await rp.logout(session.authorization.access_token)
       } catch (err) {
       }
     }
@@ -230,6 +233,57 @@ class OIDCWebClient {
     await this.providers.save(state, providerUri) // save provider by state
 
     return this.browser.redirectTo(authUri)
+  }
+
+  async authFetch (url, options = {}) {
+    const session = await this.currentSession()
+    if (!session || !session.hasCredentials()) {
+      return fetch(url, options)
+    }
+
+    // If we know the server expects credentials, send them
+    if (await shouldShareCredentials(session, this.hosts, url)) {
+      return session.fetch(url, options)
+    }
+
+    // If we don't know for sure, try a regular fetch first
+    let resp = await fetch(url, options)
+
+    // If the server then requests credentials, send them
+    if (resp.status === 401) {
+      await updateHostFromResponse(resp, this.hosts)
+      if (await shouldShareCredentials(session, this.hosts, url)) {
+        resp = session.fetch(url, options)
+      }
+    }
+    return resp
+  }
+}
+
+async function shouldShareCredentials (session, hosts, url) {
+  const { host } = new URL(url.toString(), window.location.href)
+  if (session && session.hasCredentials() && host === new URL(session.issuer).host) {
+    return {url: host, requireAuth: true}
+  }
+
+  const requestHost = await hosts.get(host)
+  return requestHost != null && requestHost.requiresAuth
+}
+
+async function updateHostFromResponse (resp, hosts) {
+  if (resp.status !== 401) {
+    return
+  }
+
+  const wwwAuthHeader = resp.headers.get('www-authenticate')
+  if (!wwwAuthHeader) {
+    return
+  }
+
+  const auth = authorization.parse(wwwAuthHeader)
+  if (auth.scheme === 'Bearer' && auth.params && auth.params.scope === 'openid webid') {
+    const { host } = new URL(resp.url)
+    await hosts.save(host, { url: host, requiresAuth: true })
   }
 }
 
