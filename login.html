@@ -123,8 +123,11 @@
       <button type="button" id="login_opl_ds" class="idp">
         <span class="label">Login with OpenLink Data Spaces (QA server)</span>
       </button>
-      <button type="button" id="login" class="idp">
-        <span class="label">Login with Localhost:8443</span>
+      <button type="button" id="login_opl_uriburner" class="idp">
+        <span class="label">OpenLink URIBurner Service</span>
+      </button>
+      <button type="button" id="login_opl_myopl" class="idp">
+        <span class="label">OpenLink My Service</span>
       </button>
     </div>
   </div>
@@ -199,7 +202,8 @@
     initButton('login_opl_oidc', () => login('https://solid.openlinksw.com:8444'))
     initButton('login_opl_v5', () => login('https://solid.openlinksw.com:8445'))
     initButton('login_opl_ds', () => login('https://ods-qa.openlinksw.com'))
-    initButton('login', () => login('https://localhost:8443'))
+    initButton('login_opl_uriburner', () => login('https://linkeddata.uriburner.com'))
+    initButton('login_opl_myopl', () => login('https://id.myopenlink.net'))
     initButton('login-custom', () => {
       var idp = document.getElementById('custom-idp').value
       if (idp.endsWith("/"))
