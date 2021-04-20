@@ -140,14 +140,10 @@
     // Check if user is already logged in
     const session = await authClient.currentSession()
     if (session && session.hasCredentials()) {
-      window.postMessage('oidc-webid:reexec', location.origin);
+      window.postMessage('oidc-webid:', location.origin);
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
-        setTimeout(function (){
-           window.close();
-        }, 1500);
-
     }
 
 //    login(IdP);
