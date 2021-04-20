@@ -144,6 +144,10 @@
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
+        setTimeout(function (){
+           window.close();
+        }, 1500);
+
     }
 
 //    login(IdP);
