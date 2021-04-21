@@ -176,7 +176,8 @@
         window.postMessage('oidc-webid-slogin:', location.origin);
       else
         window.postMessage('oidc-webid:', location.origin);
-//      localStorage.removeItem('slogin');
+
+      localStorage.removeItem('slogin');
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
