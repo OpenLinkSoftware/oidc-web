@@ -152,7 +152,10 @@
   const callback = url.href
 
   var IdP = url.searchParams.get('idp') || 'https://linkeddata.uriburner.com';
-  var sLogin = url.searchParams.get('slogin');
+  var sLogin = url.searchParams.get('slogin');;
+
+  if (sLogin === '1')
+    localStorage.setItem('slogin','1');
 
   /**
    * Gets called when the page loads
@@ -167,10 +170,12 @@
     // Check if user is already logged in
     const session = await authClient.currentSession()
     if (session && session.hasCredentials()) {
+      var slogin = localStorage.getItem('slogin');
       if (sLogin === '1')
         window.postMessage('oidc-webid-slogin:', location.origin);
       else
         window.postMessage('oidc-webid:', location.origin);
+      localStorage.removeItem('slogin');
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
