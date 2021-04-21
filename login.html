@@ -151,11 +151,19 @@
   url.hash = ''
   const callback = url.href
 
+  var IdP = url.searchParams.get('idp') || 'https://linkeddata.uriburner.com';
+  var sLogin = url.searchParams.get('slogin');
+
+  if (sLogin === '1')
+    localStorage.setItem('slogin','1');
+  else
+    sLogin = localStorage.getItem('slogin');
+
   /**
    * Gets called when the page loads
    */
   document.addEventListener('DOMContentLoaded', async () => {
-    initButtons()
+    initButtons((sLogin==='1'), IdP)
 
     if (window.location.hash === '#relogin') {
       await authClient.logout();
@@ -164,11 +172,19 @@
     // Check if user is already logged in
     const session = await authClient.currentSession()
     if (session && session.hasCredentials()) {
-      window.postMessage('oidc-webid:', location.origin);
+      if (sLogin === '1')
+        window.postMessage('oidc-webid-slogin:', location.origin);
+      else
+        window.postMessage('oidc-webid:', location.origin);
+
+      localStorage.removeItem('slogin');
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
     }
+
+    if (sLogin === '1')
+      login(IdP);
   })
 
   async function login (provider) {
@@ -196,7 +212,7 @@
   /**
    * App/UI logic. This would normally done in React, Ember, Vue, etc.
    */
-  function initButtons () {
+  function initButtons (slogin, idp) {
     initButton('login_community', () => login('https://solid.community'))
     initButton('login_test_space', () => login('https://solidtest.space'))
     initButton('login_opl_oidc', () => login('https://solid.openlinksw.com:8444'))
@@ -210,13 +226,29 @@
         idp = idp.substring(0, idp.length - 1)
       login(idp)
     })
-    initButton('cancel-custom', () => {
-      hide('custom-idp-form')
-    })
-    initButton('enable-custom', () => {
-      var f = document.getElementById('custom-idp-form')
-      f.classList.toggle('hidden')
-    })
+
+    if (slogin) {
+        document.getElementById('custom-idp-form').classList.toggle('hidden')
+        document.getElementById('login_community').classList.toggle('hidden')
+        document.getElementById('login_test_space').classList.toggle('hidden')
+        document.getElementById('login_opl_oidc').classList.toggle('hidden')
+        document.getElementById('login_opl_v5').classList.toggle('hidden')
+        document.getElementById('login_opl_ds').classList.toggle('hidden')
+        document.getElementById('login_opl_uriburner').classList.toggle('hidden')
+        document.getElementById('login_opl_myopl').classList.toggle('hidden')
+        document.getElementById('enable-custom').classList.toggle('hidden')
+        document.getElementById('cancel-custom').classList.toggle('hidden')
+        
+        document.getElementById('custom-idp').value = idp;
+    } else {
+      initButton('cancel-custom', () => {
+        hide('custom-idp-form')
+      })
+      initButton('enable-custom', () => {
+        var f = document.getElementById('custom-idp-form')
+        f.classList.toggle('hidden')
+      })
+    }
 
     initButton('logout', () => logout())
   }
