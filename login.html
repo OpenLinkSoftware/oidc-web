@@ -178,6 +178,7 @@
         window.postMessage('oidc-webid:', location.origin);
 
       localStorage.removeItem('slogin');
+      sLogin = null;
       show('logged')
       show('logout')
       setField("webid", session.idClaims.sub)
