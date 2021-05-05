@@ -154,11 +154,6 @@
   var IdP = url.searchParams.get('idp') || 'https://linkeddata.uriburner.com';
   var sLogin = url.searchParams.get('slogin');
 
-  if (sLogin === '1')
-    localStorage.setItem('slogin','1');
-  else
-    sLogin = localStorage.getItem('slogin');
-
   /**
    * Gets called when the page loads
    */
@@ -179,8 +174,6 @@
       setField("webid", session.idClaims.sub)
     }
 
-    if (sLogin === '1')
-      login(IdP);
   })
 
   async function login (provider) {
