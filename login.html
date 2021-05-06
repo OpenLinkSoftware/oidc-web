@@ -127,7 +127,10 @@
         <span class="label">OpenLink URIBurner Service</span>
       </button>
       <button type="button" id="login_opl_myopl" class="idp">
-        <span class="label">OpenLink My Service</span>
+        <span class="label">OpenLink Identity Provider</span>
+      </button>
+      <button type="button" id="login_opl_id" class="idp">
+        <span class="label">ID MyOpenLink.NET</span>
       </button>
     </div>
   </div>
@@ -220,7 +223,9 @@
     initButton('login_opl_v5', () => login('https://solid.openlinksw.com:8445'))
     initButton('login_opl_ds', () => login('https://ods-qa.openlinksw.com'))
     initButton('login_opl_uriburner', () => login('https://linkeddata.uriburner.com'))
-    initButton('login_opl_myopl', () => login('https://id.myopenlink.net'))
+    initButton('login_opl_myopl', () => login('https://my.openlinksw.com'))
+    initButton('login_opl_id', () => login('https://id.myopenlink.net'))
+    
     initButton('login-custom', () => {
       var idp = document.getElementById('custom-idp').value
       if (idp.endsWith("/"))
@@ -237,6 +242,8 @@
         document.getElementById('login_opl_ds').classList.toggle('hidden')
         document.getElementById('login_opl_uriburner').classList.toggle('hidden')
         document.getElementById('login_opl_myopl').classList.toggle('hidden')
+        document.getElementById('login_opl_id').classList.toggle('hidden')
+
         document.getElementById('enable-custom').classList.toggle('hidden')
         document.getElementById('cancel-custom').classList.toggle('hidden')
         
