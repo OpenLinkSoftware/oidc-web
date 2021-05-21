@@ -154,7 +154,7 @@
   url.hash = ''
   const callback = url.href
 
-  var IdP = url.searchParams.get('idp') || 'https://linkeddata.uriburner.com';
+  var IdP = url.searchParams.get('idp') || '';
   var sLogin = url.searchParams.get('slogin');
 
   if (sLogin === '1')
@@ -233,7 +233,7 @@
       login(idp)
     })
 
-    if (slogin) {
+    if (slogin || idp) {
         document.getElementById('custom-idp-form').classList.toggle('hidden')
         document.getElementById('login_community').classList.toggle('hidden')
         document.getElementById('login_test_space').classList.toggle('hidden')
