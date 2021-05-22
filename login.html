@@ -156,6 +156,7 @@
 
   var IdP = url.searchParams.get('idp') || '';
   var sLogin = url.searchParams.get('slogin');
+  var autoLogin = url.searchParams.get('autologin');
 
   if (sLogin === '1')
     localStorage.setItem('slogin','1');
@@ -187,7 +188,7 @@
       setField("webid", session.idClaims.sub)
     }
 
-    if (sLogin === '1')
+    if (sLogin === '1' || autologin === '1')
       login(IdP);
   })
 
