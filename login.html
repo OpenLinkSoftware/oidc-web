@@ -146,22 +146,27 @@
 </body>
 <script>
   // Lib is exported as window.OIDC
+  var url = new URL(window.location.href)
+  var url_hash = url.hash;
+  url.hash = ''
+
   const { OIDCWebClient } = OIDC
   const options = { solid: true }
   const authClient = new OIDCWebClient(options)
-  // auth is now a client instance
-  var url = new URL(window.location.href)
-  url.hash = ''
+
   const callback = url.href
 
   var IdP = url.searchParams.get('idp') || '';
   var sLogin = url.searchParams.get('slogin');
   var autoLogin = url.searchParams.get('autologin');
 
-  if (sLogin === '1')
+  if (sLogin === '1') {
     localStorage.setItem('slogin','1');
-  else
+  } else {
     sLogin = localStorage.getItem('slogin');
+    if (url_hash.indexOf('state=')===-1 && url_hash.indexOf('access_token')===-1)
+      sLogin=0;
+  }
 
   /**
    * Gets called when the page loads
